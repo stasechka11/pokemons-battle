@@ -8,30 +8,25 @@ import io.restassured.response.Response;
 public class PokemonService {
     private final PokemonClient pokemonClient = new PokemonClient();
 
-    public CreatePokemonResponse createPokemon(CreatePokemonRequest request) {
-
+    public Response createPokemon(CreatePokemonRequest request, int expectedStatusCode) {
         Response response = pokemonClient.createPokemon(request);
+        response.then().spec(ResponseSpecifications.statusCode(expectedStatusCode));
+        return response;
+    }
 
-        response.then().spec(ResponseSpecifications.statusCode200());
-
+    public CreatePokemonResponse createPokemonDto(CreatePokemonRequest request, int expectedStatusCode) {
+        Response response = createPokemon(request, expectedStatusCode);
         return response.as(CreatePokemonResponse.class);
     }
 
-    public String createPokemonAndGetId(CreatePokemonRequest request) {
-
-        Response response = pokemonClient.createPokemon(request);
-
-        response.then().spec(ResponseSpecifications.statusCode200());
-
+    public String createPokemonAndGetId(CreatePokemonRequest request, int expectedStatusCode) {
+        Response response = createPokemon(request, expectedStatusCode);
         return response.jsonPath().getString("id");
     }
 
-    public Response getPokemonById(String id) {
-
+    public Response getPokemonById(String id, int expectedStatusCode) {
         Response response = pokemonClient.getPokemonById(id);
-
-        response.then().spec(ResponseSpecifications.statusCode200());
-
+        response.then().spec(ResponseSpecifications.statusCode(expectedStatusCode));
         return response;
     }
 }
